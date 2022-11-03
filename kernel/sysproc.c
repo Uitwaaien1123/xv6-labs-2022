@@ -1,10 +1,13 @@
 #include "types.h"
 #include "riscv.h"
-#include "param.h"
 #include "defs.h"
+#include "param.h"
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
+//#include "string.h"
+
 
 uint64
 sys_exit(void)
@@ -54,7 +57,6 @@ sys_sleep(void)
   int n;
   uint ticks0;
 
-
   argint(0, &n);
   acquire(&tickslock);
   ticks0 = ticks;
@@ -68,29 +70,6 @@ sys_sleep(void)
   release(&tickslock);
   return 0;
 }
-
-
-#ifdef LAB_PGTBL
-int
-sys_pgaccess(void)
-{
-  // lab pgtbl: your code here.
-  uint64 buf;
-  int number;
-  uint64 ans;
-  argaddr(0, &buf);
-  if ( buf < 0) 
-    return -1;
-  argint(1, &number);
-  if ( number < 0) 
-    return -1;
-  argaddr(2, &ans);
-  if ( ans < 0) 
-    return -1;
-    
-  return pgaccess((void*)buf, number, (void*)ans);
-}
-#endif
 
 uint64
 sys_kill(void)
@@ -113,3 +92,33 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_trace(void)
+{
+   int mask;
+   argint(0, &mask);
+   if ( mask < 0) 
+     return -1;
+   myproc()->mask = mask; 
+   return 0;
+}
+
+uint64 
+sys_sysinfo(void) 
+{
+   uint64 ip; 
+   struct sysinfo si;
+   si.freemem = freemem();
+   si.nproc = nproc();
+   safestrcpy(si.StudentID, "20307130251", 12); 
+   argaddr(0, &ip);
+   if( ip < 0) 
+     return -1; 
+   if(copyout(myproc()->pagetable, ip, (char *)&si, sizeof(si)) < 0)
+     return -1;
+   return 0;
+}
+
+
+
