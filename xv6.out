@@ -1,0 +1,11 @@
+*** Now run 'gdb' in another window.
+
+xv6 kernel is booting
+
+init: starting sh
+$ symlinktest
+Start: test symlinks
+test symlinks: ok
+Start: test concurrent symlinks
+test concurrent symlinks: ok
+$ qemu-system-riscv64: terminating on signal 15 from pid 102138 (make)
