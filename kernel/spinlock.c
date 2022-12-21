@@ -158,21 +158,13 @@ pop_off(void)
     intr_on();
 }
 
-// Read a shared 32-bit value without holding a lock
-int
-atomic_read4(int *addr) {
-  uint32 val;
-  __atomic_load(addr, &val, __ATOMIC_SEQ_CST);
-  return val;
-}
-
 #ifdef LAB_LOCK
 int
 snprint_lock(char *buf, int sz, struct spinlock *lk)
 {
   int n = 0;
   if(lk->n > 0) {
-    n = snprintf(buf, sz, "lock: %s: #test-and-set %d #acquire() %d\n",
+    n = snprintf(buf, sz, "lock: %s: #fetch-and-add %d #acquire() %d\n",
                  lk->name, lk->nts, lk->n);
   }
   return n;
